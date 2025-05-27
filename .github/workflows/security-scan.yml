@@ -14,15 +14,10 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # Instalar Fluid Scanner
-    - name: Install Fluid Security Scanner
+    # Ejecutar Fluid usando Docker
+    - name: Run Fluid Security Scan
       run: |
-        curl -fsSL https://raw.githubusercontent.com/fluidattacks/scan-tool/main/install.sh | bash
-        sudo mv scan /usr/local/bin/scan
-
-    - name: Run Fluid Scan
-      run: |
-        scan run --output fluid-results.csv --format csv || echo "Fluid scan completed with issues"
+        docker run --rm -v ${{ github.workspace }}:/repo -w /repo fluidattacks/scan scan run --output fluid-results.csv --format csv || echo "Fluid scan completed with issues"
 
     # Instalar Trivy CLI
     - name: Install Trivy CLI
