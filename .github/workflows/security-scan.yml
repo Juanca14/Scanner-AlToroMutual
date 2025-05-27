@@ -10,7 +10,7 @@ jobs:
   Scanner:
     runs-on: ubuntu-latest
     steps:
-        
+
     - name: Checkout code
       uses: actions/checkout@v3
 
@@ -30,7 +30,7 @@ jobs:
         trivy fs . --format csv --output trivy-results.csv || echo "Trivy scan completed with issues"
 
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: scan-results
         path: |
