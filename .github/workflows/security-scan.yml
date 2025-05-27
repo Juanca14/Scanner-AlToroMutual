@@ -1,0 +1,37 @@
+name: Security Scan CI AlToro Mutual
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install Fluid Security Scanner
+      run: |
+        curl -fsSL https://raw.githubusercontent.com/fluidattacks/scan-tool/main/install.sh | bash
+
+    - name: Run Fluid Scan
+      run: |
+        ./scan run --output fluid-results.csv --format csv || echo "Fluid scan completed with issues"
+
+    - name: Install Trivy
+      uses: aquasecurity/trivy-action@v0.13.1
+
+    - name: Run Trivy file scan
+      run: |
+        trivy fs . --format csv --output trivy-results.csv || echo "Trivy scan completed with issues"
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: scan-results
+        path: |
+          fluid-results.csv
+          trivy-results.csv
