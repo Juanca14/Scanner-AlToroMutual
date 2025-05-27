@@ -14,22 +14,22 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # Instalar Trivy CLI
     - name: Install Trivy CLI
       run: |
         curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
 
-    # Ejecutar Trivy y generar CSV
-    - name: Run Trivy file system scan
-      run: |
-        trivy fs . --format csv --output trivy-results.csv || echo "Trivy scan completed with issues"
-        ls -la trivy-results.csv || echo "trivy-results.csv not found"
+    - name: Run Trivy file system scan (stdout)
+      run: trivy fs . --format table || echo "Trivy scan completed with issues"
 
-    # Mostrar preview del resultado
+    - name: Run Trivy file system scan (csv output)
+      run: trivy fs . --format csv --output trivy-results.csv || echo "Trivy scan completed with issues"
+
+    - name: List files in repo
+      run: ls -la
+
     - name: Show Trivy CSV preview
       run: head -10 trivy-results.csv || echo "No trivy-results.csv to preview"
 
-    # Subir artefactos con los resultados
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
