@@ -14,11 +14,22 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # Ejecutar Fluid usando Docker y verificar archivo
+    # Instalar Fluid Scanner via script
+    - name: Install Fluid Security Scanner
+      run: |
+        curl -fsSL https://raw.githubusercontent.com/fluidattacks/scan-tool/main/install.sh | bash
+        ls -la ./scan
+
+    # Ejecutar Fluid Scan y verificar archivo
     - name: Run Fluid Scan with debug
       run: |
-        docker run --rm -v ${{ github.workspace }}:/repo -w /repo fluidattacks/scan scan run --output fluid-results.csv --format csv || echo "Fluid scan completed with issues"
+        ./scan run --output fluid-results.csv --format csv || echo "Fluid scan completed with issues"
         ls -la fluid-results.csv || echo "fluid-results.csv not found"
+
+    # Instalar Trivy CLI
+    - name: Install Trivy CLI
+      run: |
+        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
 
     # Ejecutar Trivy y verificar archivo
     - name: Run Trivy file system scan with debug
@@ -33,7 +44,7 @@ jobs:
     - name: Show Trivy CSV preview
       run: head -10 trivy-results.csv || echo "No trivy-results.csv to preview"
 
-    # Subir artefactos (aunque estén vacíos o no existan)
+    # Subir artefactos
     - name: Upload Artifacts
       if: always()
       uses: actions/upload-artifact@v4
