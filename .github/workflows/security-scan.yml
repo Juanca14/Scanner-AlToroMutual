@@ -27,13 +27,16 @@ jobs:
         sudo mv dependency-check /opt/dependency-check
         sudo ln -s /opt/dependency-check/bin/dependency-check.sh /usr/local/bin/dependency-check
 
-    - name: Run Dependency-Check
+    - name: Run OWASP Dependency-Check
       run: |
         dependency-check --project "AltoroJ" \
                          --scan . \
                          --format "ALL" \
                          --out reports \
+                         --enableExperimental \
+                         --log reports/dependency-check.log \
                          --failOnCVSS 7 || echo "Scan completed with issues"
+
 
     - name: Upload dependency-check reports
       uses: actions/upload-artifact@v4
