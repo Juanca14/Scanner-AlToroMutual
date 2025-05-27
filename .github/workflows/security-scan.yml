@@ -18,10 +18,11 @@ jobs:
     - name: Install Fluid Security Scanner
       run: |
         curl -fsSL https://raw.githubusercontent.com/fluidattacks/scan-tool/main/install.sh | bash
+        sudo mv scan /usr/local/bin/scan
 
     - name: Run Fluid Scan
       run: |
-        ./scan run --output fluid-results.csv --format csv || echo "Fluid scan completed with issues"
+        scan run --output fluid-results.csv --format csv || echo "Fluid scan completed with issues"
 
     # Instalar Trivy CLI
     - name: Install Trivy CLI
@@ -32,8 +33,13 @@ jobs:
       run: |
         trivy fs . --format csv --output trivy-results.csv || echo "Trivy scan completed with issues"
 
+    # Listar archivos para verificar que se generaron
+    - name: List files
+      run: ls -la
+
     # Subir archivos CSV como artefactos
     - name: Upload Artifacts
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: scan-results
