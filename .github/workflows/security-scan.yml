@@ -14,25 +14,26 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # Ejecutar Fluid usando Docker
-    - name: Run Fluid Security Scan
+    # Ejecutar Fluid usando Docker y verificar archivo
+    - name: Run Fluid Scan with debug
       run: |
         docker run --rm -v ${{ github.workspace }}:/repo -w /repo fluidattacks/scan scan run --output fluid-results.csv --format csv || echo "Fluid scan completed with issues"
+        ls -la fluid-results.csv || echo "fluid-results.csv not found"
 
-    # Instalar Trivy CLI
-    - name: Install Trivy CLI
-      run: |
-        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
-
-    - name: Run Trivy file system scan
+    # Ejecutar Trivy y verificar archivo
+    - name: Run Trivy file system scan with debug
       run: |
         trivy fs . --format csv --output trivy-results.csv || echo "Trivy scan completed with issues"
+        ls -la trivy-results.csv || echo "trivy-results.csv not found"
 
-    # Listar archivos para verificar que se generaron
-    - name: List files
-      run: ls -la
+    # Mostrar preview de los resultados
+    - name: Show Fluid CSV preview
+      run: head -10 fluid-results.csv || echo "No fluid-results.csv to preview"
 
-    # Subir archivos CSV como artefactos
+    - name: Show Trivy CSV preview
+      run: head -10 trivy-results.csv || echo "No trivy-results.csv to preview"
+
+    # Subir artefactos (aunque estén vacíos o no existan)
     - name: Upload Artifacts
       if: always()
       uses: actions/upload-artifact@v4
