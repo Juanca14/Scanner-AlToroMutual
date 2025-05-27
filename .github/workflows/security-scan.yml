@@ -18,20 +18,17 @@ jobs:
       run: |
         curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
 
-    - name: Run Trivy file system scan (stdout)
-      run: trivy fs . --format table || echo "Trivy scan completed with issues"
-
-    - name: Run Trivy file system scan (csv output)
-      run: trivy fs . --format csv --output trivy-results.csv || echo "Trivy scan completed with issues"
+    - name: Run Trivy file system scan (json output)
+      run: trivy fs . --format json --output trivy-results.json || echo "Trivy scan completed with issues"
 
     - name: List files in repo
       run: ls -la
 
-    - name: Show Trivy CSV preview
-      run: head -10 trivy-results.csv || echo "No trivy-results.csv to preview"
+    - name: Show Trivy JSON preview
+      run: head -20 trivy-results.json || echo "No trivy-results.json to preview"
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: scan-results
-        path: trivy-results.csv
+        path: trivy-results.json
