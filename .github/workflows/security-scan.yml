@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  dependency-check:
+  Dependency-check:
     runs-on: ubuntu-latest
 
     steps:
@@ -33,8 +33,7 @@ jobs:
             --scan . \
             --format ALL \
             --out reports \
-            --failOnCVSS 7 || echo "Scan completed with issues"
-
+            --failOnCVSS 7
     - name: List reports
       run: ls -l reports
 
