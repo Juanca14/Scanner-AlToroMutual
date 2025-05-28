@@ -22,22 +22,25 @@ jobs:
 
     - name: Install OWASP Dependency-Check
       run: |
-        curl -L -o dependency-check.zip https://github.com/jeremylong/DependencyCheck/releases/download/v9.0.9/dependency-check-9.0.9-release.zip
+        curl -L -o dependency-check.zip https://github.com/jeremylong/DependencyCheck/releases/download/v8.4.0/dependency-check-8.4.0-release.zip
         unzip dependency-check.zip -d dependency-check
-        sudo mv dependency-check/dependency-check /opt/dependency-check
-        sudo chmod +x /opt/dependency-check/bin/dependency-check.sh
+        sudo mv dependency-check /opt/dependency-check
         sudo ln -s /opt/dependency-check/bin/dependency-check.sh /usr/local/bin/dependency-check
+        chmod +x /usr/local/bin/dependency-check
+
+    - name: Create reports directory
+      run: mkdir -p reports
 
     - name: Run OWASP Dependency-Check
       run: |
-        mkdir -p reports
         dependency-check --project "AltoroJ" \
                          --scan . \
-                         --format "ALL" \
+                         --format "HTML,CSV,JSON" \
                          --out reports \
-                         --enableExperimental \
-                         --log reports/dependency-check.log \
-                         --failOnCVSS 7 || echo "Scan completed with issues"
+                         --failOnCVSS 7
+
+    - name: List reports
+      run: ls -l reports
 
     - name: Upload dependency-check reports
       uses: actions/upload-artifact@v4
