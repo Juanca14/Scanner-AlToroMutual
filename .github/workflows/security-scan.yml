@@ -20,6 +20,11 @@ jobs:
         distribution: 'temurin'
         java-version: '11'
 
+    - name: Set up .NET 6
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '6.0.x'
+
     - name: Download and Extract OWASP Dependency-Check
       run: |
         curl -L -o dependency-check.zip https://github.com/jeremylong/DependencyCheck/releases/download/v8.4.0/dependency-check-8.4.0-release.zip
@@ -34,6 +39,7 @@ jobs:
             --format ALL \
             --out reports \
             --failOnCVSS 7
+
     - name: List reports
       run: ls -l reports
 
@@ -42,3 +48,4 @@ jobs:
       with:
         name: dependency-check-reports
         path: reports/
+
