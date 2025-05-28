@@ -30,6 +30,7 @@ jobs:
 
     - name: Run OWASP Dependency-Check
       run: |
+        mkdir -p reports
         dependency-check --project "AltoroJ" \
                          --scan . \
                          --format "ALL" \
