@@ -20,24 +20,20 @@ jobs:
         distribution: 'temurin'
         java-version: '11'
 
-    - name: Install OWASP Dependency-Check
+    - name: Download and Extract OWASP Dependency-Check
       run: |
         curl -L -o dependency-check.zip https://github.com/jeremylong/DependencyCheck/releases/download/v8.4.0/dependency-check-8.4.0-release.zip
         unzip dependency-check.zip -d dependency-check
-        sudo mv dependency-check /opt/dependency-check
-        sudo ln -s /opt/dependency-check/bin/dependency-check.sh /usr/local/bin/dependency-check
-        chmod +x /usr/local/bin/dependency-check
-
-    - name: Create reports directory
-      run: mkdir -p reports
 
     - name: Run OWASP Dependency-Check
       run: |
-        dependency-check --project "AltoroJ" \
-                         --scan . \
-                         --format "HTML,CSV,JSON" \
-                         --out reports \
-                         --failOnCVSS 7
+        mkdir -p reports
+        ./dependency-check/dependency-check/bin/dependency-check.sh \
+            --project "AltoroJ" \
+            --scan . \
+            --format "HTML,CSV,JSON" \
+            --out reports \
+            --failOnCVSS 7
 
     - name: List reports
       run: ls -l reports
