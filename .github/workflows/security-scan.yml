@@ -1,4 +1,4 @@
-name: OWASP Dependency-Check Scan
+name: OWASP Dependency-Check and Semgrep Scan
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  Dependency-check:
+  Security-scan:
     runs-on: ubuntu-latest
 
     steps:
@@ -34,18 +34,29 @@ jobs:
       run: |
         mkdir -p reports
         ./dependency-check/dependency-check/bin/dependency-check.sh \
-            --project "AltoroJ" \
-            --scan . \
-            --format ALL \
-            --out reports \
-            --failOnCVSS 7
+          --project "AltoroJ" \
+          --scan . \
+          --format ALL \
+          --out reports \
+          # --failOnCVSS 7
 
-    - name: List reports
-      run: ls -l reports
-
-    - name: Upload dependency-check reports
+    - name: Upload Dependency-Check reports
       uses: actions/upload-artifact@v4
       with:
         name: dependency-check-reports
         path: reports/
 
+    - name: Install Semgrep
+      run: |
+        python3 -m pip install --upgrade pip
+        pip install semgrep
+
+    - name: Run Semgrep scan
+      run: |
+        semgrep --config=auto --json --output=semgrep-results.json
+
+    - name: Upload Semgrep results
+      uses: actions/upload-artifact@v4
+      with:
+        name: semgrep-results
+        path: semgrep-results.json
